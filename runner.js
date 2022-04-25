@@ -1,19 +1,19 @@
-// Use filesystem.
+// Использовать файловую систему.
 const fs = require('fs');
-// Use functions from sudoku.js file.
+// Использовать функции из файла sudoku.js.
 const sudoku = require('./sudoku');
 
-// The sudoku puzzles that your program will solve can be found
-// in the sudoku-puzzles.txt file.
+// Головоломки судоку, которые решит ваша программа, можно найти
+// в файле sudoku-puzzles.txt.
 //
-// Remember, the file has newline characters at the end of each line,
-// so you should remove them.
+// Помните, что файл имеет символы новой строки в конце каждой строки,
+// так что вы должны удалить их.
 
-// Gets one puzzle from the text file.
+// Получает одну головоломку из текстового файла.
 function sudokuParse(content, puzzleNumber = 0) {
   let puzzle = content.split('\n')[puzzleNumber];
+  console.log('Исходный вариант судоку');
   console.log(puzzle);
-  console.log('parser');
   return puzzle;
 }
 
@@ -25,12 +25,16 @@ function readAndSolve(err, data) {
 
   let solvedPuzzle = sudoku.solve(puzzle);
   if (sudoku.isSolved(solvedPuzzle)) {
-    console.log("The board was solved!");
-    console.log(sudoku.prettyBoard(solvedPuzzle));
+    console.log('Доска решена!');
+    console.table(sudoku.prettyBoard(solvedPuzzle));
   } else {
-    console.log("The board wasn't solved :(");
+    console.log('Доска не была решена :(');
   }
 }
 
-// Reads file and sends data from it to the readAndSolve function.
-fs.readFile('./sudoku-puzzles.txt','utf-8', readAndSolve);
+// Читает файл и отправляет данные из него в функцию readAndSolve.
+fs.readFile(
+  './sudoku-puzzles.txt',
+  'utf-8',
+  readAndSolve,
+);

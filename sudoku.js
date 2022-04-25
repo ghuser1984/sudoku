@@ -1,45 +1,71 @@
-// Takes a board as a string in the format
-// you see in the puzzle file. Returns
-// something representing a board after
-// your solver has tried to solve it.
-// How you represent your board is up to you!
-let boardString = "1-58-2----9--764-52--4--819-19--73-6762-83-9-----61-5---76---3-43--2-5-16--3-89---"
-function solve(boardString) {
-  const board = [];
-  for (let i = 1; i <= 9; i++) {
-    board.push([]);
-    for (let i = 0; i < board.length; i++) {
-      let j = 1;
-      while (board[i].length < 9) {
-        board[i].push(`${j}` + '');
-        j++;
-      }
+/* eslint-disable no-plusplus */
+// переводим доску из строки в подмассив
+function boardFromStringToArray(boardString) {
+  const boardStringArr = boardString.split('');
+  const boardArray = [];
+  for (let i = 0; i < Math.ceil(boardStringArr.length / 9); i++) {
+    boardArray[i] = boardStringArr.slice((i * 9), (i * 9) + 9);
+  }
+  console.log('\nВывод визуально правильной доски');
+  console.table(boardArray);
+  return boardArray;
+}
+
+// проверка валидности элемента
+function check(num, pos, board) {
+  const [c, r] = pos;
+  for (let i = 0; i < 9; i++) {
+    if (board[i][c] === num && i !== r) return false;
+  }
+  for (let i = 0; i < 9; i++) {
+    if (board[r][i] === num && i !== c) return false;
+  }
+  const boxRow = Math.floor((r / 3) * 3);
+  const boxCol = Math.floor((c / 3) * 3);
+  for (let i = boxRow; i < boxRow + 3; i++) {
+    for (let j = boxCol; j < boxCol + 3; j++) {
+      if (board[i][j] === num && i !== r && j !== c) return false;
     }
   }
-  console.log(board);
+  return true;
 }
-solve();
 
-// Returns a boolean indicating whether
-// or not the provided board is solved.
-// The input board will be in whatever
-// form `solve` returns.
-// function isSolved(board) {
+function findPositionElement(boardArr) {
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      if (boardArr[i][j] === '-') return [i, j];
+    }
+  }
+  return null;
+}
+// вычисляем судоку
+function solve(board) {
+  if (typeof board === 'string') board = boardFromStringToArray(board);
+  const currPos = findPositionElement(board);
+  if (currPos === null) return true;
+  for (let i = 1; i <= 9; i++) {
+    const currNum = i.toString();
+    const isCheck = check(currNum, currPos, board);
+    if (isCheck) {
+      const [x, y] = currPos;
+      board[x][y] = currNum;
+      if (solve(board)) return true;
+      board[x][y] = '-';
+    }
+    console.table(board);
+  }
+  return true;
+}
 
-// }
+// возвращем логическое значение (решена/не решена)
+function isSolved(board) {}
 
-// Takes in a board in some form and
-// returns a String that's well formatted
-// for output to the screen.
-// The input board will be in whatever
-// form `solve` returns.
-// function prettyBoard(board) {
+// выводим на экран решенную судоку
+function prettyBoard(board) {}
 
-// }
-
-// Exports all the functions to use them in another file.
-// module.exports = {
-//   solve,
-//   isSolved,
-//   prettyBoard,
-// };
+// Экспортирует все функции, чтобы использовать их в другом файле.
+module.exports = {
+  solve,
+  isSolved,
+  prettyBoard,
+};
